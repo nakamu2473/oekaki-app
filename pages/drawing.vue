@@ -1,7 +1,7 @@
 <template>
   <main>
-    <p>ここにお絵描き</p>
     <p>{{ user }}でログインしてるよ</p>
+    <p>ここにお絵描き</p>
     <canvas ref="canvas" width="512" height="512"
       style="border: 1px solid #000;"
       @mousedown="startDrawing"
@@ -17,7 +17,7 @@
 
 <script>
 export default {
-  data: () => {
+  data() {
     return {
       canvas: null,
       ctx: null,
@@ -27,15 +27,30 @@ export default {
       isDrawing: false, // マウスが押されているかどうかを追跡
       lastPos: { x: 0, y: 0 }, // 前回の描画位置を保存
 
-      draws:[]
+      draws:[],
+
+      user: "",
+      color: "",
     };
   },
   mounted(){
     this.canvas = this.$refs.canvas;
     this.ctx = this.canvas.getContext('2d');
 
+    // 背景色を設定
+    this.ctx.fillStyle = '#ffffff';
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
     this.download = this.$refs.download;
     this.download.addEventListener( "click", this.saveImage );
+
+    console.log(localStorage.getItem("user"))
+    if(!localStorage.getItem("user")) {
+        this.$router.push("/") 
+    }else{
+        this.user = localStorage.getItem("user")
+        this.color = localStorage.getItem("color")
+    }
   },
   methods: {
     // マウスダウン時に描画を開始
@@ -53,7 +68,7 @@ export default {
       this.ctx.beginPath();
       this.ctx.moveTo(this.lastPos.x, this.lastPos.y);
       this.ctx.lineTo(mousePos.x, mousePos.y);
-      this.ctx.strokeStyle = "#000000";  // 描画する線の色を設定
+      this.ctx.strokeStyle = this.color;  // 描画する線の色を設定
       this.ctx.lineWidth = 1;  // 線の太さを設定
       this.ctx.stroke();
       this.ctx.closePath();
@@ -61,7 +76,7 @@ export default {
       // 描画したデータを保存
       this.draws.push(this.ctx)
       console.log(this.draws)
-      localStorage.setItem("draws", JSON.stringify(this.draws))
+      localStorage.setItem("draws_${user}", JSON.stringify(this.draws))
 
       // 現在の位置を次回の開始点として保存
       this.lastPos = mousePos;
@@ -87,11 +102,11 @@ export default {
     },
 
     drawUp() {
-            console.log(this.draws)
-            this.draws.push(this.note)
-            console.log(this.draws)
-            localStorage.setItem("draws", JSON.stringify(this.draws))
-            console.log(localStorage.getItem("draws"))
+      console.log(this.draws)
+      this.draws.push(this.note)
+      console.log(this.draws)
+      localStorage.setItem("draws", JSON.stringify(this.draws))
+      console.log(localStorage.getItem("draws"))
     },
   }
 }

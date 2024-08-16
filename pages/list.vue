@@ -1,48 +1,32 @@
 <template>
-
-<v-row justify="center">
-    <v-col
-        cols="12"
-        sm="10"
-        md="8"
-        lg="6"
+    <div>
+    <button
+        color="primary"
+        variant="text"
+        @click="editUser"
     >
-        <v-card ref="form">
-            
-            <v-card-text>
-                <v-btn
-                    color="primary"
-                    variant="text"
-                    @click="editUser"
-                >
-                {{ user }}</v-btn>
-                でログインしたにゃ
-            </v-card-text>
-            <v-card-text>
-                <v-text-field
-                v-model="note"
-                label="note"
-                placeholder="投稿しよう"
-                ></v-text-field>
-            </v-card-text>
-            <v-btn
-                color="primary"
-                variant="text"
-                @click="notePost"
-                :disable="!loginArea" 
-            >
-            投稿にゃ
-            </v-btn>
-            <v-card-text
-                v-for="item in notes"
-                v-bind:key="item">
-                {{ item }}　by {{ user }}
-            </v-card-text>
-        </v-card>
-    </v-col>
-</v-row>
-
+    {{ user }}</button>
+    <p>{{ user }}でログインしたにゃ</p>
+    <input
+        v-model="note"
+        label="note"
+        placeholder="投稿しよう"
+    >
+    <button
+        color="primary"
+        variant="text"
+        @click="notePost"
+        :disable="!loginArea" 
+    >
+    投稿にゃ
+    </button>
+    <p v-for="item in notes"
+        v-bind:key="item">
+        {{ item }}　by {{ user }}
+    </p>
+</div>
 </template>
+
 <script>
 export default{
     data(){
