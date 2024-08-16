@@ -31,6 +31,8 @@ export default {
 
       user: "",
       color: "",
+
+      ws: null,
     };
   },
   mounted(){
@@ -44,13 +46,17 @@ export default {
     this.download = this.$refs.download;
     this.download.addEventListener( "click", this.saveImage );
 
-    console.log(localStorage.getItem("user"))
+    //  ユーザーを設定
     if(!localStorage.getItem("user")) {
         this.$router.push("/") 
     }else{
         this.user = localStorage.getItem("user")
         this.color = localStorage.getItem("color")
     }
+
+    // WebSocket接続を設定
+    this.ws = new WebSocket('ws://localhost:8080');
+    this.ws.onmessage = this.receiveDrawing;
   },
   methods: {
     // マウスダウン時に描画を開始
@@ -77,6 +83,14 @@ export default {
       this.draws.push(this.ctx)
       console.log(this.draws)
       localStorage.setItem("draws_${user}", JSON.stringify(this.draws))
+
+      // 描画データをWebSocketサーバに送信
+      const drawingData = {
+        offsetX: e.offsetX,
+        offsetY: e.offsetY,
+        type: 'draw',
+      };
+      this.ws.send(JSON.stringify(drawingData));
 
       // 現在の位置を次回の開始点として保存
       this.lastPos = mousePos;
